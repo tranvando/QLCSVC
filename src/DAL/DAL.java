@@ -17,8 +17,10 @@ public class DAL {
     static Connection conn=null;
     public void getConnect(){
         try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            conn = (Connection)DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=QLCSVC;Username=sa;Password = abc");
+            //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            //conn = (Connection)DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=QLCSVC;Username=sa;Password = abc");
+            String url="jdbc:mysql://localhost:3306/qlcsvc";
+            conn=DriverManager.getConnection(url,"root","");
         } catch (Exception e) {
             System.out.println("Không kết nối được");
         }

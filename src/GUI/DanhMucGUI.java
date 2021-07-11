@@ -1239,7 +1239,7 @@ public class DanhMucGUI extends javax.swing.JFrame {
                     .addComponent(txtPassMKNhapLai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnDoiPass, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(426, Short.MAX_VALUE))
+                .addContainerGap(428, Short.MAX_VALUE))
         );
 
         jTabbedPaneMain.addTab("", jPanelMatKhau);
@@ -1445,7 +1445,7 @@ public class DanhMucGUI extends javax.swing.JFrame {
                 .addGroup(jPanelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel49)
                     .addComponent(lblChucVu))
-                .addContainerGap(398, Short.MAX_VALUE))
+                .addContainerGap(400, Short.MAX_VALUE))
         );
 
         jTabbedPaneMain.addTab("", jPanelMain);
@@ -1479,7 +1479,7 @@ public class DanhMucGUI extends javax.swing.JFrame {
             jTableThongKe.getColumnModel().getColumn(4).setPreferredWidth(100);
         }
 
-        cbbTkMa.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cbbTkMa.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         cbbTkMa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbbTkMa.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1487,7 +1487,7 @@ public class DanhMucGUI extends javax.swing.JFrame {
             }
         });
 
-        cbbTkPhong.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cbbTkPhong.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         cbbTkPhong.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cbbTkPhong.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1495,7 +1495,7 @@ public class DanhMucGUI extends javax.swing.JFrame {
             }
         });
 
-        cbbTkTinhTrang.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cbbTkTinhTrang.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         cbbTkTinhTrang.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "Tốt", "Hỏng", "Thanh lý" }));
         cbbTkTinhTrang.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1583,19 +1583,22 @@ public class DanhMucGUI extends javax.swing.JFrame {
         JTableHeader tableHeader3 = jTableTbPhong.getTableHeader();
         JTableHeader tableHeader4 = jTableGiaoDich.getTableHeader();
         JTableHeader tableHeader5 = jTableChiTietGD.getTableHeader();
+        JTableHeader tableHeader6 = jTableThongKe.getTableHeader();
+        
         tableHeader1.setBackground(Color.black);
         tableHeader1.setFont(new Font("Tahoma", Font.PLAIN, 12));
         tableHeader2.setFont(new Font("Tahoma", Font.BOLD, 14));
         tableHeader3.setFont(new Font("Tahoma", Font.BOLD, 14));
         tableHeader4.setFont(new Font("Tahoma", Font.BOLD, 14));
         tableHeader5.setFont(new Font("Tahoma", Font.BOLD, 14));
-        
+        tableHeader6.setFont(new Font("Tahoma", Font.BOLD, 14));
+         
         jTableThietBi.setFont(new Font("Tahoma", Font.PLAIN, 14));
         jTablePhong.setFont(new Font("Tahoma", Font.PLAIN, 14));
         jTableTbPhong.setFont(new Font("Tahoma", Font.PLAIN, 14));
         jTableGiaoDich.setFont(new Font("Tahoma", Font.PLAIN, 14));
         jTableChiTietGD.setFont(new Font("Tahoma", Font.PLAIN, 14));
-        
+        jTableThongKe.setFont(new Font("Tahoma", Font.PLAIN, 14));
     }
     
     
@@ -1923,7 +1926,7 @@ public class DanhMucGUI extends javax.swing.JFrame {
      
     //gọi đến tab thống kê.
     private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
-       
+        jTabbedPaneMain.setSelectedIndex(5);
     }//GEN-LAST:event_btnThongKeActionPerformed
 
     //Dữ liệu cbb Mã thiết bị thống kê thay đổi 
