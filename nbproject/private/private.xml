@@ -3,9 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/pc/Desktop/csvc/QLCSVC/src/DAL/DAL.java</file>
-            <file>file:/C:/Users/pc/Desktop/csvc/QLCSVC/src/GUI/DanhMucGUI.java</file>
-            <file>file:/C:/Users/pc/Desktop/csvc/QLCSVC/src/GUI/DangNhapGUI.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/CustomTable/TableTBPhong.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/DTO/KhoDTO.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/GUI/DangNhapGUI.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/DTO/jPanelCacLoaiGD.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/CustomTable/TablePhong.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/CustomTable/TableKho.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/CustomTable/TableLichSu.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/DTO/ThietBiPhongDTO.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/BLL/PhongBLL.java</file>
+            <file>file:/C:/Users/love0/Desktop/damnm/QLCSVC/src/BLL/ThongKeBLL.java</file>
         </group>
     </open-files>
 </project-private>
