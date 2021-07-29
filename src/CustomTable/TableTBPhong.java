@@ -49,5 +49,6 @@ public class TableTBPhong extends AbstractTableModel {
     public String getColumnName(int column) {
         return name[column];
     }
+    
 }
 
