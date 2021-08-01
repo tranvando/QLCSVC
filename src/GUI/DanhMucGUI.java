@@ -1696,9 +1696,51 @@ public class DanhMucGUI extends javax.swing.JFrame {
   
     
     //////GIAO DỊCH//////////////////////////
-    
+     public ArrayList<GiaoDichDTO> listGD()//Lấy danh sách các giao dịch từ cơ sở dữ liệu
+    {
+        try {
+            ArrayList<GiaoDichDTO> listGD = new ArrayList<GiaoDichDTO>();
+            ResultSet rs = GiaoDichBLL.loadGD(cbbTKLoaiGD.getSelectedItem().toString());
+            while (rs.next()) {
+                GiaoDichDTO gd = new GiaoDichDTO();
+                gd.setMaGD(rs.getInt("MaGD"));
+                gd.setLoaiGD(rs.getString("LoaiGD"));
+                gd.setThoiGian(rs.getString("ThoiGian"));
+                gd.setMaPhong(rs.getString("MaPhong"));
+                gd.setNguoiTH(rs.getString("NguoiTH"));
+                listGD.add(gd);
+            }
+            return listGD;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+      public ArrayList<LichSuDTO> listLichSu(int MaGD)//Lấy danh sách các chi tiết giao dịch từ cơ sở dữ liệu
+    {
+         try {
+            ArrayList<LichSuDTO> listLichSu = new ArrayList<LichSuDTO>();
+            ResultSet rs = GiaoDichBLL.loadLichSu(MaGD);
+            while (rs.next()) {
+                LichSuDTO ls=new LichSuDTO();
+                ls.setMaTB(rs.getString("MaTB"));
+                ls.setTenTB(rs.getString("TenTB"));
+                ls.setTinhTrang(rs.getString("TinhTrang"));
+                ls.setMoTa(rs.getString("MoTa"));
+                ls.setSoLuong(rs.getInt("SoLuong"));
+                ls.setDonGia(rs.getInt("DonGia"));
+                listLichSu.add(ls);
+            }
+            return listLichSu;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+      
+       
     public void loadGD() {
-        
+         jTableGiaoDich.setModel(new TableGiaoDich(listGD()));
     }
     
     //Nút giao dịch ở menu///////////////////////////
@@ -1715,7 +1757,32 @@ public class DanhMucGUI extends javax.swing.JFrame {
     
     //Chọn một dòng trong bảng giao dịch
     private void jTableGiaoDichMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableGiaoDichMouseClicked
-       
+        int row = jTableGiaoDich.getSelectedRow();
+        GiaoDichDTO ls= listGD().get(row);
+        int MaGD=ls.getMaGD();
+        String TenGD=ls.getLoaiGD();
+        String ThoiGian=ls.getThoiGian();
+        String MaPhong= ls.getMaPhong();
+        String TenNV=ls.getNguoiTH();
+        //
+        lblMaGD.setText(String.valueOf(MaGD));
+        //lblTenGD.setText(TenGD);
+        lblThoiGian.setText(ThoiGian);
+        lblNguoiTH.setText(TenNV);
+        
+        jTableChiTietGD.setModel(new TableLichSu(listLichSu(MaGD)));//load dữ liệu lên bảng chi tiết giao dịch
+        
+        TableColumnModel m = jTableChiTietGD.getColumnModel();
+        m.getColumn(5).setCellRenderer(NumberRenderer.getIntegerRenderer());//định dạng tiền cột đơn giá
+        m.getColumn(6).setCellRenderer(NumberRenderer.getIntegerRenderer());//định dạng tiền tệ cho cột thành tiền
+      
+        if(TenGD.equals("Chuyển thiết bị"))
+             lblTenGD.setText(TenGD + " đến mã phòng: "+MaPhong);
+        else
+            if(TenGD.equals("Lưu kho"))
+               lblTenGD.setText(TenGD + " tại mã phòng: "+MaPhong); 
+            else
+                lblTenGD.setText(TenGD);
     }//GEN-LAST:event_jTableGiaoDichMouseClicked
    
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -1921,12 +1988,14 @@ public class DanhMucGUI extends javax.swing.JFrame {
         btnKho.setBackground(colorBD);
        
     }//GEN-LAST:event_btnThongKeMousePressed
-
+ 
+  
    
      
     //gọi đến tab thống kê.
     private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
         jTabbedPaneMain.setSelectedIndex(5);
+       
     }//GEN-LAST:event_btnThongKeActionPerformed
 
     //Dữ liệu cbb Mã thiết bị thống kê thay đổi 
@@ -1938,6 +2007,9 @@ public class DanhMucGUI extends javax.swing.JFrame {
        
     }//GEN-LAST:event_cbbTkPhongItemStateChanged
 
+   
+  
+    
     private void cbbTkTinhTrangItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbTkTinhTrangItemStateChanged
         
     }//GEN-LAST:event_cbbTkTinhTrangItemStateChanged
