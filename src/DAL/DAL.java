@@ -17,10 +17,11 @@ import javax.swing.JOptionPane;
  */
 public class DAL {
     
-    static ResultSet rs = null;
+    static ResultSet rs =  null;
     static Statement st = null;
     static Connection conn=null;
     static void getConnect(){
+        
         try {
             //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             //conn = (Connection)DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=QLCSVC;Username=sa;Password = abc");

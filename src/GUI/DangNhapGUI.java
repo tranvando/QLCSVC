@@ -154,7 +154,7 @@ public class DangNhapGUI extends javax.swing.JFrame {
     }
     
     private void jButtonDangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDangNhapActionPerformed
-                String tenDN = txtTenDN.getText();
+        String tenDN = txtTenDN.getText();
         String matKhau = String.valueOf(txtPassMK.getPassword());
         if (tenDN.isEmpty() || matKhau.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Bạn chưa nhập đầy đủ thông tin", "Thông báo", 1);
