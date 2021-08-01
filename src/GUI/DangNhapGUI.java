@@ -137,10 +137,43 @@ public class DangNhapGUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+        public TaiKhoanDTO TK() throws SQLException
+    {
+        String tenDN = txtTenDN.getText();
+        String matKhau = String.valueOf(txtPassMK.getPassword());
+        TaiKhoanDTO tk=new TaiKhoanDTO();
+        ResultSet rs = tkBLL.getTaiKhoan(tenDN, matKhau);
+        while(rs.next())
+        {
+            tk.setTenDN(rs.getString("TenDN"));
+            tk.setMatKhau(rs.getString("MatKhau"));
+            tk.setTenNV(rs.getString("TenNV"));
+            tk.setChucVu(rs.getString("ChucVu"));
+        }
+        return tk;
+    }
     
     private void jButtonDangNhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDangNhapActionPerformed
-        
+                String tenDN = txtTenDN.getText();
+        String matKhau = String.valueOf(txtPassMK.getPassword());
+        if (tenDN.isEmpty() || matKhau.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Bạn chưa nhập đầy đủ thông tin", "Thông báo", 1);
+
+        } else {
+            try {
+                TaiKhoanDTO tk=TK();
+                if (tkBLL.getTaiKhoan(tenDN, matKhau).isBeforeFirst()&&tk.getTenDN().equals(tenDN)&&tk.getMatKhau().equals(matKhau)) //Kiểm tra có tài khoản lấy lên từ CSDL không
+                {
+                    DanhMucGUI dn=new DanhMucGUI(tenDN,tk.getTenNV(),tk.getChucVu());
+                    dn.setVisible(true);
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Tên đăng nhập hoặc mật khẩu không chính xác", "Thông báo", 1);
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DangNhapGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
     }//GEN-LAST:event_jButtonDangNhapActionPerformed
 
