@@ -1988,30 +1988,113 @@ public class DanhMucGUI extends javax.swing.JFrame {
         btnKho.setBackground(colorBD);
        
     }//GEN-LAST:event_btnThongKeMousePressed
- 
-  
+    public Vector<String> listMaTBTk()//danh sách mã thiết bị thông kê
+    {
+        ArrayList<KhoDTO> kho = listTbKho();
+        Vector<String> dsMaTB = new Vector<>();
+        dsMaTB.add(0, "All");
+        for (int i = 0; i <kho.size(); i++) {
+            dsMaTB.add(kho.get(i).getMaTB());
+        }
+        return dsMaTB;
+    }
+     public Vector<String> listTenTBTk()//danh sách tên thiết bị thông kê
+    {
+        ArrayList<KhoDTO> kho = listTbKho();
+        Vector<String> dsTenTB = new Vector<>();
+        dsTenTB.add(0, "All");
+        for (int i = 0; i <kho.size(); i++) {
+            dsTenTB.add(kho.get(i).getTenTB());
+        }
+        return dsTenTB;
+    }
+     public Vector<String> listTenPhong()//danh sách tên phòng
+    {
+        ArrayList<PhongDTO> phong = listPhong();
+        Vector<String> dsTenPhong = new Vector<>();
+        dsTenPhong.add(0, "Kho");
+        for (int i = 0; i < phong.size(); i++) {
+            dsTenPhong.add(phong.get(i).getTenPhong());
+        }
+        return dsTenPhong;
+    }
    
      
     //gọi đến tab thống kê.
     private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
         jTabbedPaneMain.setSelectedIndex(5);
-       
+        cbbTkMa.setModel(new DefaultComboBoxModel(listMaTBTk()));//load mã thiết bị vào combobox
+       cbbTkPhong.setModel(new DefaultComboBoxModel(listTenPhong()));//load mã thiết bị vào combobox
+       loadTableTk(listTbTKe(tk.tk1("All")),"Kho","");
     }//GEN-LAST:event_btnThongKeActionPerformed
 
     //Dữ liệu cbb Mã thiết bị thống kê thay đổi 
     private void cbbTkMaItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbTkMaItemStateChanged
-       
+       ThongKe();
     }//GEN-LAST:event_cbbTkMaItemStateChanged
 
     private void cbbTkPhongItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbTkPhongItemStateChanged
-       
+       ThongKe();
     }//GEN-LAST:event_cbbTkPhongItemStateChanged
-
-   
-  
+  public ArrayList<TBThongKeDTO> listTbTKe(ResultSet rs)
+    {
+        try {
+            ArrayList<TBThongKeDTO> listTbTKe = new ArrayList<TBThongKeDTO>();
+            while (rs.next()) {
+                TBThongKeDTO tb = new TBThongKeDTO();
+                tb.setMaTB(rs.getString("MaTB"));
+                tb.setTenTB(rs.getString("TenTB"));
+                tb.setSoLuong(rs.getString("SoLuong"));
+                listTbTKe.add(tb);
+            }
+            return listTbTKe;
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhMucGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+  public void loadTableTk(ArrayList<TBThongKeDTO> dsTB,String Phong,String TinhTrang)
+     {
+          DefaultTableModel model=(DefaultTableModel) jTableThongKe.getModel();
+          model.setRowCount(0);
+          for(TBThongKeDTO tb:dsTB)
+          {
+              model.addRow(new Object[]{tb.getMaTB(),tb.getTenTB(),tb.getSoLuong(),Phong,TinhTrang});
+          }
+     }
+     
+     ThongKeBLL tk=new ThongKeBLL();
+    public void ThongKe()
+    {
+        String MaTB=String.valueOf(cbbTkMa.getSelectedItem());
+        String Phong=String.valueOf(cbbTkPhong.getSelectedItem());
+        String TinhTrang=String.valueOf(cbbTkTinhTrang.getSelectedItem());
+        if(Phong.equals("Kho"))
+        {
+            if(TinhTrang.equals("All"))//tk1
+                loadTableTk(listTbTKe(tk.tk1(MaTB)),"Kho","");
+            if(TinhTrang.equals("Tốt"))//tk2
+                loadTableTk(listTbTKe(tk.tk2(MaTB)),"Kho","Tốt");
+            if(TinhTrang.equals("Hỏng"))//tk3
+                loadTableTk(listTbTKe(tk.tk3(MaTB)),"Kho","Hỏng");
+            if(TinhTrang.equals("Thanh lý"))//tk4
+                loadTableTk(listTbTKe(tk.tk4(MaTB)),"","Thanh lý");
+        }
+        else
+        {
+            if(TinhTrang.equals("All"))//tk5
+                loadTableTk(listTbTKe(tk.tk5(MaTB,Phong)),Phong,"");
+            if(TinhTrang.equals("Tốt"))//tk6
+                loadTableTk(listTbTKe(tk.tk6(MaTB,Phong)),Phong,"Tốt");
+            if(TinhTrang.equals("Hỏng"))//tk7
+                loadTableTk(listTbTKe(tk.tk7(MaTB,Phong)),Phong,"Hỏng");
+            if(TinhTrang.equals("Thanh lý"))//tk4
+                loadTableTk(listTbTKe(tk.tk4(MaTB)),"","Thanh lý");
+        }
+    }
     
     private void cbbTkTinhTrangItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbTkTinhTrangItemStateChanged
-        
+             ThongKe();
     }//GEN-LAST:event_cbbTkTinhTrangItemStateChanged
     
     
