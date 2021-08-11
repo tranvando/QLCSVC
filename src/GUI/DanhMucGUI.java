@@ -1605,9 +1605,48 @@ public class DanhMucGUI extends javax.swing.JFrame {
     ////////////////////////////////////////
     //Đổi mật khẩu/////////////////////////////////////////////////////////////////////////////////
        
+        public boolean KtPassCu() throws SQLException
+    {
+        String MkCuNhap = String.valueOf(txtPassMKCu.getPassword());
+        ResultSet rs = TaiKhoanBLL.getTaiKhoan(TenDangNhap, MkCuNhap);
+        while(rs.next())
+        {
+            String MkCuCSDL=rs.getString("MatKhau");
+            if(MkCuNhap.equals(MkCuCSDL))
+               return true;
+        }
+        return false;
+    } 
+    
     private void btnDoiPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDoiPassActionPerformed
 
        
+        String matKhauCu = String.valueOf(txtPassMKCu.getPassword());//Lấy dữ liệu từ PassField
+        String matKhauMoi = String.valueOf(txtPassMKMoi.getPassword());
+        String mkNhapLai = String.valueOf(txtPassMKNhapLai.getPassword());
+        if (matKhauCu.isEmpty() || matKhauMoi.isEmpty() || mkNhapLai.isEmpty())
+            JOptionPane.showMessageDialog(null, "Bạn chưa nhập đầy đủ thông tin", "Thông báo", 1);
+        else {
+            try {
+                if(!KtPassCu())//Kiểm tra mật khẩu cũ nhập vào có giống trong csdl;
+                    JOptionPane.showMessageDialog(null, "Mật khẩu cũ không đúng", "Thông báo", 1);
+                else
+                {
+                    if (matKhauMoi.compareTo(mkNhapLai)!=0)//Kiểm tra nếu mật khẩu mới nhập lại khác nhau
+                        JOptionPane.showMessageDialog(null, "Mật khẩu mới không trùng khớp", "Thông báo", 1);
+                    else
+                        if(TaiKhoanBLL.capNhatMK(TenDangNhap,matKhauMoi, matKhauCu) != 0)//
+                        {
+                            JOptionPane.showMessageDialog(null, "Đổi mật khẩu thành công", "Thông báo", 1);//cập nhật mật khẩu vào cơ sở dữ liệu
+                            txtPassMKCu.setText("");
+                            txtPassMKMoi.setText("");
+                            txtPassMKNhapLai.setText("");    
+                        }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(DanhMucGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_btnDoiPassActionPerformed
     ////////////////////////////////////////////////////////////////////////////////////////
 
