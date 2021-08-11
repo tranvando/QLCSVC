@@ -1,3 +1,8 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package DAL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +20,7 @@ public class DAL {
     static ResultSet rs = null;
     static Statement st = null;
     static Connection conn=null;
-    public void getConnect(){
+    static void getConnect(){
         try {
             //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             //conn = (Connection)DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=QLCSVC;Username=sa;Password = abc");
@@ -81,4 +86,7 @@ public class DAL {
         }
    } 
 
+    public static void main(String[] args) {
+        getConnect();
+    }
 }

@@ -27,13 +27,11 @@ public class TablePhong extends AbstractTableModel{
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-       switch(columnIndex)
-       {
-           case 0: return listPhong.get(rowIndex).getMaPhong();
-           case 1: return listPhong.get(rowIndex).getTenPhong();
-           
-           default: return null;
-       }
+        return switch (columnIndex) {
+            case 0 -> listPhong.get(rowIndex).getMaPhong();
+            case 1 -> listPhong.get(rowIndex).getTenPhong();
+            default -> null;
+        };
     }
 
     @Override

@@ -1635,7 +1635,8 @@ public class DanhMucGUI extends javax.swing.JFrame {
 
     private void btnPhongBanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPhongBanActionPerformed
         jTabbedPaneMain.setSelectedIndex(1);
-       
+        loadPhong();
+        loadCbbPhong();
         System.gc();
         System.runFinalization();
     }//GEN-LAST:event_btnPhongBanActionPerformed
@@ -1727,25 +1728,125 @@ public class DanhMucGUI extends javax.swing.JFrame {
     
     
     //////////PHÒNG//////////////
+    public ArrayList<PhongDTO> listPhong()//ds phòng từ cơ sở dữ liệu
+    {
+       try {
+            ArrayList<PhongDTO> listPhong = new ArrayList<PhongDTO>();
+            ResultSet rs = PhongBLL.loadPhong();
+            while (rs.next()) {
+                PhongDTO phong = new PhongDTO();
+                phong.setMaPhong(rs.getString("MaPhong"));
+                phong.setTenPhong(rs.getString("TenPhong"));
+                listPhong.add(phong);
+            }
+            return listPhong;
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhMucGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null; 
+    }
+    public void loadPhong() {
+        jTablePhong.setModel(new TablePhong(listPhong()));
+    }
     
-     
-   
+     public void ThemPhong() throws Exception
+     {
+        String MaPhong = txtMaPhong.getText();
+        String TenPhong = txtTenPhong.getText();
+        ArrayList<PhongDTO> list = listPhong();
+        PhongDTO phong=new PhongDTO();
+        phong.setMaPhong(MaPhong);
+        if (MaPhong.isEmpty() || TenPhong.isEmpty())
+            throw new Exception("Bạn chưa nhập đầy đủ thông tin");
+        else {
+            if (list.contains(phong)) 
+                throw new Exception("Mã phòng đã tồn tại");
+            else {
+                if (PhongBLL.ThemPhong(MaPhong, TenPhong) != 0) {
+                    JOptionPane.showMessageDialog(null, "Thêm phòng thành công", "Thông báo", 1);
+                    loadPhong();
+                    txtMaPhong.setText("");
+                    txtTenPhong.setText("");
+                    loadCbbPhong();
+                } else
+                    JOptionPane.showMessageDialog(null, "Thêm phòng thất bại", "Thông báo", 1);
+            }
+
+        }
+     }
+
+
     private void btnThemPhongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemPhongActionPerformed
-       
+       try {
+            ThemPhong();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,e.getMessage(), "Thông báo", 1);
+        }
     }//GEN-LAST:event_btnThemPhongActionPerformed
 
     private void btnSuaPhongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaPhongActionPerformed
-        
+        String MaPhong = txtMaPhong.getText();
+        String TenPhong = txtTenPhong.getText();
+        if (MaPhong.isEmpty() || TenPhong.isEmpty())
+            JOptionPane.showMessageDialog(null, "Bạn chưa chọn phòng", "Thông báo", 1);
+        else {
+            if (PhongBLL.SuaPhong(MaPhong, TenPhong) != 0) {
+                JOptionPane.showMessageDialog(null, "Cập nhật thành công", "Thông báo", 1);
+                loadPhong();
+                txtMaPhong.setText("");
+                txtTenPhong.setText("");
+                loadCbbPhong();
+            } else {
+                JOptionPane.showMessageDialog(null, "Cập nhật thất bại", "Thông báo", 1);
+            }
+        }
     }//GEN-LAST:event_btnSuaPhongActionPerformed
     
     //Chọn một dòng trong table Thiết bị
     private void jTablePhongMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTablePhongMouseClicked
-       
-       
+        int row=jTablePhong.getSelectedRow();
+        String MaPhong=(String)jTablePhong.getValueAt(row, 0);
+        String TenPhong=(String)jTablePhong.getValueAt(row, 1);
+        txtMaPhong.setText(MaPhong);
+        txtTenPhong.setText(TenPhong);
+    
     }//GEN-LAST:event_jTablePhongMouseClicked
 
     private void btnXoaPhongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaPhongActionPerformed
-        
+        String MaPhong = txtMaPhong.getText();
+        String TenPhong = txtTenPhong.getText();
+        if(MaPhong.isEmpty()||TenPhong.isEmpty())
+        {
+            JOptionPane.showMessageDialog(null, "Bạn chưa chọn phòng", "Thông báo", 1);
+        }
+        else
+        {
+            try {
+                if(PhongBLL.getTbMaPhong(MaPhong).isBeforeFirst())
+                    JOptionPane.showMessageDialog(null, "Vẫn còn thiết bị trong phòng", "Thông báo", 1);
+                else
+                { 
+                    int ret=JOptionPane.showConfirmDialog(null,"Bạn có chắc chắn muốn xóa phòng", "Thoát",
+                    JOptionPane.YES_NO_OPTION);
+                    if(ret==JOptionPane.YES_OPTION)
+                    {
+                        if(PhongBLL.XoaPhong(MaPhong)!=0)
+                        {
+                            JOptionPane.showMessageDialog(null, "Xóa phòng thành công", "Thông báo", 1);
+                            loadPhong();
+                            txtMaPhong.setText("");
+                            txtTenPhong.setText("");
+                            loadCbbPhong();
+                        }
+                        else
+                            JOptionPane.showMessageDialog(null, "Xóa phòng thất bại", "Thông báo", 1);
+                    }
+                    
+                }   
+            } catch (SQLException ex) {
+                Logger.getLogger(DanhMucGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_btnXoaPhongActionPerformed
 //////////////////////////////////////////////////////////////////////////////////
     
@@ -1755,18 +1856,93 @@ public class DanhMucGUI extends javax.swing.JFrame {
     //Thiết bị trong phòng//////////////////////////////////////////////////////////////
     
     private void cbbTenPhongItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbbTenPhongItemStateChanged
-        
+        String MaPhong = String.valueOf(cbbTenPhong.getSelectedItem());
+        loadTbPhong(MaPhong);
     }//GEN-LAST:event_cbbTenPhongItemStateChanged
     
+     public void loadCbbPhong()//Load Mã thiết bị lên combobox
+    {
+        cbbTenPhong.setModel(new DefaultComboBoxModel(listMaPhong()));
+        String MaPhong = String.valueOf(cbbTenPhong.getSelectedItem());
+        loadTbPhong(MaPhong);
+    }
+    
+     public ArrayList<ThietBiPhongDTO> listTbPhong(String MaPhong)
+    {
+       try {
+            ArrayList<ThietBiPhongDTO> listTbPhong = new ArrayList<>();
+            ResultSet rs = PhongBLL.loadTbPhong(MaPhong);
+            while (rs.next()) {
+                ThietBiPhongDTO TbPhong = new ThietBiPhongDTO();
+                TbPhong.setMaTB(rs.getString("MaTB"));
+                TbPhong.setTenTB(rs.getString("TenTB"));
+                TbPhong.setSL(rs.getInt("SL"));
+                TbPhong.setSLHong(rs.getInt("SLHong"));
+                listTbPhong.add(TbPhong);
+            }
+            return listTbPhong;
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhMucGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null; 
+    }
+    public void loadTbPhong(String MaPhong)//Load thiết bị trong phòng dựa vào mã phòng truyền vào
+    {
+        jTableTbPhong.setModel(new TableTBPhong(listTbPhong(MaPhong)));
+    }
+     public Vector<String> listMaPhong()//danh sách mã thiết bị
+    {
+        ArrayList<PhongDTO> phong = listPhong();
+        Vector<String> dsMaPhong = new Vector<>();
+        for (int i = 0; i < phong.size(); i++) {
+            dsMaPhong.add(phong.get(i).getMaPhong());
+        }
+        return dsMaPhong;
+    }
      
+    String MaTBPhong="";
+    int SLTong=0;
     
     private void btnSLHongActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSLHongActionPerformed
-
-       
-    }//GEN-LAST:event_btnSLHongActionPerformed
     
+        if(rowTBPhong==-1)
+            JOptionPane.showMessageDialog(null, "Bạn chưa chọn thiết bị", "Thông báo", 1);
+        else
+        {
+            String MaPhong=String.valueOf(cbbTenPhong.getSelectedItem());
+            
+            if(!Pattern.matches("[0-9]+",txtSLHong.getText()))
+                  JOptionPane.showMessageDialog(null, "Số lượng không hợp lệ", "Thông báo", 1);
+            else
+            {
+                int SLHong = Integer.valueOf(txtSLHong.getText());
+                if(SLHong>SLTong)
+                    JOptionPane.showMessageDialog(null, "Số lượng hỏng vượt quá tổng số lượng thiết bị", "Thông báo", 1);
+                else
+                {
+                    if(PhongBLL.CapNhatSLHong(MaPhong,MaTBPhong,SLHong)!=0)
+                    {
+                        JOptionPane.showMessageDialog(null, "Cập nhật số lượng hỏng thành công", "Thông báo", 1);
+                        loadTbPhong(MaPhong);
+                        txtSLHong.setText("");
+                    }
+                else
+                    JOptionPane.showMessageDialog(null, "Cập nhật số lượng hỏng thất bại", "Thông báo", 1);
+                }
+            }
+        }
+    }//GEN-LAST:event_btnSLHongActionPerformed
+    int rowTBPhong=-1;
     private void jTableTbPhongMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableTbPhongMouseClicked
-        
+        rowTBPhong=jTableTbPhong.getSelectedRow();
+        int SLHong=(Integer) jTableTbPhong.getValueAt(rowTBPhong, 4);
+        SLTong=(Integer) jTableTbPhong.getValueAt(rowTBPhong, 2);
+        MaTBPhong=(String) jTableTbPhong.getValueAt(rowTBPhong, 0);
+        txtSLHong.setText(String.valueOf(SLHong));
+        ///Load lên để lưu kho//
+        String MaPhong=cbbTenPhong.getSelectedItem().toString();
+        txtMaPhongLuu.setText(MaPhong);
+        txtMaTBLuu.setText(MaTBPhong);
     }//GEN-LAST:event_jTableTbPhongMouseClicked
 ///////////////////////////////////////////////////////////////////
     
