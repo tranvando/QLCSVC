@@ -1655,8 +1655,6 @@ public class DanhMucGUI extends javax.swing.JFrame {
     
     //////KHO/////////////////////////////////////////////
     
-  
-    
     
     public void Them() throws Exception
     {
@@ -1682,13 +1680,218 @@ public class DanhMucGUI extends javax.swing.JFrame {
     
     //THANH LÝ THIẾT BỊ//////////////////////////////////////////////////// 
    
-    
+     ArrayList<jPanelCacLoaiGD> listDongThanhLy = new ArrayList<>();//danh sách các dòng động đã thêm trên GUI
+    public int ktTrungMaTL()
+    {
+        ArrayList<CacGiaoDichDTO> listTBCchay = listTBTL();
+        for(int i=0; i<listTBCchay.size(); i++)
+        {
+            String ktMaTB = listTBCchay.remove(i).getMaTB();//Mã thiết bị dòng đầu tiên
+            CacGiaoDichDTO GD = new CacGiaoDichDTO();
+            GD.setMaTB(ktMaTB);
+            if (listTBCchay.contains(GD))//Kiểm tra trùng mã thiết bị giữa dòng các hàng
+                return 1;
+            listTBCchay=listTBTL();
+        }
+        return 0;
+    }
+    public void ktSLTot() throws Exception//Kiểm tra số lượng thanh lý có nhỏ hơn số lượng trong kho hay không
+    {
+        ArrayList<CacGiaoDichDTO> listTbThanhLy=listTBTL();
+        for(int i=0; i<listTbThanhLy.size(); i++)
+        {   
+            int SLThanhLy=listTbThanhLy.get(i).getSoLuong();
+            int SLTot=getSLTrongKho(listTbThanhLy.get(i).getMaTB())-getSLHongKho(listTbThanhLy.get(i).getMaTB());
+            if(listTbThanhLy.get(i).getTinhTrang().compareTo("Tốt")==0&&SLThanhLy>SLTot)
+                throw new Exception("Số lượng thiết bị tốt thanh lý lớn hơn số lượng tốt trong kho");
+            if(listTbThanhLy.get(i).getTinhTrang().compareTo("Hỏng")==0&&SLThanhLy>getSLHongKho(listTbThanhLy.get(i).getMaTB()))
+                throw new Exception("Số lượng thanh lý lớn hơn số lượng hỏng trong kho");
+        }
+                ThanhLyTB();
+    }
+    public int getSLTrongKho(String MaTB)//Lấy số lượng tốt theo mã thiết bị
+    {
+        int SLTot=0;
+        ArrayList<KhoDTO> listTbKho = listTbKho();
+        //ArrayList<CacGiaoDichDTO> listTbThanhLy=listTBTL();
+        for(int i=0; i<listTbKho.size(); i++)
+        {
+            if(listTbKho.get(i).getMaTB().compareTo(MaTB)==0)
+            {
+                SLTot=listTbKho.get(i).getSLTot();
+            }
+        }
+        return SLTot;
+    }
+    public int getSLHongKho(String MaTB)//Lấy số lượng hỏng theo mã thiết bị
+    {
+        int SLHong=0;
+        ArrayList<KhoDTO> listTbKho = listTbKho();
+        //ArrayList<CacGiaoDichDTO> listTbThanhLy=listTBTL();
+        for(int i=0; i<listTbKho.size(); i++)
+        {
+            if(listTbKho.get(i).getMaTB().compareTo(MaTB)==0)
+            {
+                SLHong=listTbKho.get(i).getSLHong();
+            }
+        }
+        return SLHong;
+    }
+    public ArrayList<CacGiaoDichDTO> listTBTL()//Lấy thông tin từ các dòng động
+    {
+        ArrayList<CacGiaoDichDTO> thanhly = new ArrayList<CacGiaoDichDTO>();
+        for (int i = 0; i < listDongThanhLy.size(); i++) {
+            CacGiaoDichDTO tl = new CacGiaoDichDTO();
+            tl.setMaTB(listDongThanhLy.get(i).getCbbMaTB().getSelectedItem().toString());
+            tl.setTinhTrang(listDongThanhLy.get(i).getCbbTinhTrang().getSelectedItem().toString());
+            tl.setMoTa(listDongThanhLy.get(i).getTxtMoTa().getText());
+            tl.setSoLuong(Integer.valueOf(listDongThanhLy.get(i).getTxtSL().getText()));
+            tl.setDonGia(Integer.valueOf(listDongThanhLy.get(i).getTxtDonGia().getText()));
+            thanhly.add(tl);
+        }
+        return thanhly;
+    }
+    public void ThanhLyTB() throws Exception{
+        int dem = 0,kt=0;
+        int ret = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn thanh lý thiết bị?", "Thoát", JOptionPane.YES_NO_OPTION);
+        if (ret == JOptionPane.YES_OPTION) 
+        {
+            
+            GiaoDichBLL.GiaoDichThem("Thanh lý thiết bị", strDate,TenNhanVien);//Them vào GiaoDich(Ten,LoaiGD)
+            ArrayList<CacGiaoDichDTO> listTB = listTBTL();
+            for (int i = 0; i < listTB.size(); i++) {
+                String MaTB = listTB.get(i).getMaTB();
+                String TinhTrang = listTB.get(i).getTinhTrang();
+                String MoTa = listTB.get(i).getMoTa();
+                int SoLuong = listTB.get(i).getSoLuong();
+                int DonGia =  listTB.get(i).getDonGia();
+                if (GiaoDichBLL.LichSu(MaTB, SoLuong, DonGia, TinhTrang, MoTa) != 0) {
+                    dem++;
+                    GiaoDichBLL.THThanhLy(MaTB, SoLuong, TinhTrang);
+                }
+            }
+        }
+        else 
+            kt=1;
+            if (dem != 0) {
+                JOptionPane.showMessageDialog(null, "Thanh lý thành công", "Thông báo", 1);
+                loadThietBi();
+            } else
+                if(kt==0)
+                JOptionPane.showMessageDialog(null, "Thanh lý thất bại", "Thông báo", 1);
+    }
+    public void ThucHienTL() throws Exception
+    {
+            for (int i = 0; i < listDongThanhLy.size(); i++) {
+                String MaTB = listDongThanhLy.get(i).getCbbMaTB().getSelectedItem().toString();
+                String TinhTrang = listDongThanhLy.get(i).getCbbTinhTrang().getSelectedItem().toString();
+                String SL = listDongThanhLy.get(i).getTxtSL().getText();
+                String DonGia = listDongThanhLy.get(i).getTxtDonGia().getText();
+                if (MaTB.isEmpty() || SL.isEmpty() || DonGia.isEmpty() || TinhTrang.isEmpty())
+                    throw new Exception("Bạn chưa nhập đầy đủ thông tin");
+                //Pattern p = Pattern.compile("\dg"); 
+                //Matcher ma = p.matcher(SL);
+                //boolean b = m.matches();  
+                if(!Pattern.matches("[0-9]+",SL)||Integer.valueOf(SL)<=0)
+                    throw new Exception("Số lượng không hợp lệ");
+                if(!Pattern.matches("[0-9]+",DonGia)||Integer.valueOf(DonGia)<0)
+                    throw new Exception("Đơn giá không hợp lệ");
+            }   
+            if(listTBTL().size() != 0)
+            {
+                if(ktTrungMaTL()==1)
+                    throw new Exception("Trùng mã thiết bị");
+                ktSLTot(); 
+            }
+    }
+    public void themTbThanhLy()//Thêm động các hàng nhập thông tin thiết bị trên form
+    {
+        jPanelLoatDongTB.setLayout(new BoxLayout(jPanelLoatDongTB, BoxLayout.Y_AXIS));//set layout cho panel
+        FlowLayout flow = new FlowLayout(FlowLayout.RIGHT);
+        JPanel panelHang = new JPanel();
+        panelHang.setLayout(flow);
+
+        JComboBox cbbMaTB = new JComboBox(listMaTB());
+        cbbMaTB.setPreferredSize(new Dimension(130, 25));
+        cbbMaTB.setFont(new Font("Tahoma", Font.PLAIN, 14));
+
+        JComboBox cbbTinhTrang = new JComboBox();
+        cbbTinhTrang.setPreferredSize(new Dimension(100, 25));
+        cbbTinhTrang.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        cbbTinhTrang.addItem("Hỏng");
+        cbbTinhTrang.addItem("Tốt");
+        
+
+        JTextField txtLyDo = new JTextField();
+        txtLyDo.setPreferredSize(new Dimension(130, 25));
+        txtLyDo.setFont(new Font("Tahoma", Font.PLAIN, 14));
+        
+        JTextField txtSL = new JTextField();
+        txtSL.setPreferredSize(new Dimension(80, 25));
+        txtSL.setFont(new Font("Tahoma", Font.PLAIN, 14));
+
+        JTextField txtDonGia = new JTextField();
+        txtDonGia.setPreferredSize(new Dimension(100, 25));
+        txtDonGia.setFont(new Font("Tahoma", Font.PLAIN, 14));
+
+        ImageIcon icon = new ImageIcon("src/Icon/Delete.png");
+        JButton btn = new JButton(icon);
+        btn.setPreferredSize(new Dimension(20, 20));
+
+        jPanelCacLoaiGD tl = new jPanelCacLoaiGD();
+        tl.setBtn(btn);
+        tl.setCbbMaTB(cbbMaTB);
+        tl.setCbbTinhTrang(cbbTinhTrang);
+        tl.setTxtMoTa(txtLyDo);
+        tl.setTxtSL(txtSL);
+        tl.setTxtDonGia(txtDonGia);
+        listDongThanhLy.add(tl);
+
+        panelHang.add(cbbMaTB);
+        panelHang.add(cbbTinhTrang);
+        panelHang.add(txtLyDo);
+        panelHang.add(txtSL);
+        panelHang.add(txtDonGia);
+        panelHang.add(btn);
+
+        jPanelLoatDongTB.add(panelHang);
+        btn.setIcon(icon);
+        this.revalidate();
+        this.repaint();
+
+        btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < listDongThanhLy.size(); i++) {
+                    if (listDongThanhLy.get(i).getBtn().equals(btn)) {
+                        listDongThanhLy.remove(i);
+                    }
+                }
+                jPanelLoatDongTB.remove(panelHang);
+                jPanelLoatDongTB.revalidate();
+                jPanelLoatDongTB.repaint();
+            }
+        });
+    }
+    public Vector<String> listMaTB()//danh sách mã thiết bị
+    {
+        ArrayList<KhoDTO> kho = listTbKho();
+        Vector<String> dsMaTB = new Vector<>();
+        for (int i = 0; i < kho.size(); i++) {
+            dsMaTB.add(kho.get(i).getMaTB());
+        }
+        return dsMaTB;
+    }
     private void btnThemDongTBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemDongTBActionPerformed
-       
+        themTbThanhLy();
     }//GEN-LAST:event_btnThemDongTBActionPerformed
 
     private void btnThanhLyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhLyActionPerformed
-
+         try {
+            ThucHienTL();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Thông báo", 1);
+        }
     }//GEN-LAST:event_btnThanhLyActionPerformed
     /////////////////////////////////////////////////////////////////////////////////////
 
@@ -1776,16 +1979,166 @@ public class DanhMucGUI extends javax.swing.JFrame {
     
     
     ////////CHUYỂN THIẾT BỊ/////////////////////////////////
-   
-   
+    ArrayList<jPanelCacLoaiGD> listDongChuyen =new ArrayList<jPanelCacLoaiGD>();
+    public ArrayList<CacGiaoDichDTO> listTBChuyen()//Lấy thông tin từ các dòng động add vào list thiết bị chuyển
+    {
+        ArrayList<CacGiaoDichDTO> chuyen = new ArrayList<CacGiaoDichDTO>();
+        for (int i = 0; i < listDongChuyen.size(); i++) {
+            CacGiaoDichDTO tl = new CacGiaoDichDTO();
+            tl.setMaTB(listDongChuyen.get(i).getCbbMaTB().getSelectedItem().toString());
+            tl.setSoLuong(Integer.valueOf(listDongChuyen.get(i).getTxtSL().getText()));
+            chuyen.add(tl);
+        }
+        return chuyen;
+    }
+    public int ktTrungMa()
+    {
+        ArrayList<CacGiaoDichDTO> listTBCchay = listTBChuyen();
+        for(int i=0; i<listTBCchay.size(); i++)
+        {
+            String ktMaTB = listTBCchay.remove(i).getMaTB();//Mã thiết bị dòng đầu tiên
+            CacGiaoDichDTO GD = new CacGiaoDichDTO();
+            GD.setMaTB(ktMaTB);
+            if (listTBCchay.contains(GD))//Kiểm tra trùng mã thiết bị giữa dòng các hàng
+                return 1;
+            listTBCchay=listTBChuyen();
+        }
+        return 0;
+    }
+    public void themTbChuyen()//Thêm động các hàng nhập thông tin thiết bị trên form
+    {
+        jPanelTbChuyen.setLayout(new BoxLayout(jPanelTbChuyen, BoxLayout.Y_AXIS));//set layout cho panel
+        FlowLayout flow = new FlowLayout(FlowLayout.RIGHT);
+        JPanel panelHang = new JPanel();
+        panelHang.setLayout(flow);
+
+        JComboBox cbbMaTB = new JComboBox(listMaTB());
+        cbbMaTB.setPreferredSize(new Dimension(200, 25));
+        cbbMaTB.setFont(new Font("Tahoma", Font.PLAIN, 14));
+
+        JTextField txtSL = new JTextField();
+        txtSL.setPreferredSize(new Dimension(150, 25));
+        txtSL.setFont(new Font("Tahoma", Font.PLAIN, 14));
+
+
+        ImageIcon icon = new ImageIcon("src/Icon/Delete.png");
+        JButton btn = new JButton(icon);
+        btn.setPreferredSize(new Dimension(20, 20));
+
+        jPanelCacLoaiGD tl = new jPanelCacLoaiGD();
+        tl.setBtn(btn);
+        tl.setCbbMaTB(cbbMaTB);
+        tl.setTxtSL(txtSL);
+        listDongChuyen.add(tl);
+
+        panelHang.add(cbbMaTB);
+        panelHang.add(txtSL);
+        panelHang.add(btn);
+
+        jPanelTbChuyen.add(panelHang);
+        btn.setIcon(icon);
+        this.revalidate();
+        this.repaint();
+
+        btn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < listDongChuyen.size(); i++) {
+                    if (listDongChuyen.get(i).getBtn().equals(btn)) {
+                        listDongChuyen.remove(i);
+                    }
+                }
+                jPanelTbChuyen.remove(panelHang);
+                jPanelTbChuyen.revalidate();
+                jPanelTbChuyen.repaint();
+            }
+        });
+    }
+    public int getSL(String MaTB)//Trả về số lượng trong kho của thiết bị có MaTB
+    {
+        ArrayList<KhoDTO> list = listTbKho();
+        for(int i=0; i<list.size();i++)
+            if(list.get(i).getMaTB().equals(MaTB))
+                return list.get(i).getSLTot();
+        return 0;
+    }
+    public void Chuyen()
+    {   
+        int dem=0, kt=0, kt1=0;
+        ArrayList<CacGiaoDichDTO> listTBC = listTBChuyen();
+        String MaPhongChuyen=cbbPhongChuyen.getSelectedItem().toString();
+        int ret = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn chuyển thiết bị", "Thoát",
+                JOptionPane.YES_NO_OPTION);
+        if (ret == JOptionPane.YES_OPTION) 
+        {
+            GiaoDichBLL.GiaoDich("Chuyển thiết bị", MaPhongChuyen, strDate, TenNhanVien);
+            for(int i=0; i<listTBC.size(); i++)
+            {
+                int SL=listTBC.get(i).getSoLuong();
+                String MaTB=listTBC.get(i).getMaTB();
+                if (GiaoDichBLL.LichSu(MaTB, SL, 0, "Tốt", "") != 0)
+                {
+                    dem++;
+                    GiaoDichBLL.THChuyen(MaPhongChuyen, MaTB, SL);
+                    GiaoDichBLL.TH(MaPhongChuyen, MaTB, SL);
+                }
+            }
+        } else
+            kt1 = 1;
+        if (dem != 0) 
+        {
+            JOptionPane.showMessageDialog(null, "Chuyển thiết bị thành công", "Thông báo", 1);
+            loadThietBi();
+        } 
+        else 
+            if (kt1 == 0) 
+                JOptionPane.showMessageDialog(null, "Chuyển thiết bị thất bại", "Thông báo", 1);
+
+    }
+    public void ThucHienChuyen() throws Exception
+    {
+            for (int i = 0; i < listDongChuyen.size(); i++) {
+                String MaTB = listDongChuyen.get(i).getCbbMaTB().getSelectedItem().toString();
+                String SoLuong = listDongChuyen.get(i).getTxtSL().getText();
+                if (MaTB.isEmpty() || SoLuong.isEmpty())
+                    throw new Exception("Bạn chưa nhập đầy đủ thông tin");
+                if(!Pattern.matches("[0-9]+",SoLuong))
+                    throw new Exception("Số lượng không hợp lệ");
+            }
+                if(listTBChuyen().size() != 0) 
+                {   
+                    int dem=0, kt=0,kt1=0;
+                    
+  
+                    ArrayList<CacGiaoDichDTO> listTBC = listTBChuyen();
+                    for (int i = 0; i <listTBC.size(); i++) //Thêm list dòng vào cơ sở dữ liệu
+                    {   
+                        int SL=listTBC.get(i).getSoLuong();
+                        String MaTB=listTBC.get(i).getMaTB();
+                        if(ktTrungMa()==1)//Kiểm tra trùng mã thiết bị giữa dòng các hàng
+                            throw new Exception("Trùng mã thiết bị");
+                        if(SL<=0)
+                            throw new Exception("Số lượng không hợp lệ");
+                        if(listTBC.get(i).getSoLuong()>getSL(listTBC.get(i).getMaTB()))
+                            throw new Exception("Số lượng chuyển vượt quá số lượng trong kho");
+                    }
+                    Chuyen();
+                }            
+    }
             
     private void btnThemTbChuyenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTbChuyenActionPerformed
-        
+        themTbChuyen();
     }//GEN-LAST:event_btnThemTbChuyenActionPerformed
  
     private void btnChuyenTbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChuyenTbActionPerformed
 
-       
+       try {
+            ThucHienChuyen();
+            //System.gc();//gom rac
+            //System.runFinalization();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Thông báo", 1);
+        }
     }//GEN-LAST:event_btnChuyenTbActionPerformed
 //////////////////////////////////////////////////////////////////////////
     
