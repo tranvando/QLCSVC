@@ -1694,21 +1694,112 @@ public class DanhMucGUI extends javax.swing.JFrame {
     
     //////KHO/////////////////////////////////////////////
     
-  
+    public void loadThietBi() {
+         jTableThietBi.setModel(new TableKho(listTbKho()));
+         TableColumnModel m = jTableThietBi.getColumnModel();
+         m.getColumn(4).setCellRenderer(NumberRenderer.getIntegerRenderer());//định dạng tiền cột đơn giá
+    }
+    public void xoaTrang()
+    {
+        txtTenTB.setText("");
+        txtMaTB.setText("");
+        txtCauHinh.setText("");
+        txtMoTa.setText("");
+        txtDonGia.setText("");
+        txtSoLuong.setText("");
+    }
+    public ArrayList<KhoDTO> listTbKho()
+    {
+        try {
+            ArrayList<KhoDTO> listKho = new ArrayList<KhoDTO>();
+            ResultSet rs = KhoBLL.listTBKho();
+            while (rs.next()) {
+                KhoDTO kho = new KhoDTO();
+                kho.setMaTB(rs.getString("MaTB"));
+                kho.setTenTB(rs.getString("TenTB"));
+                kho.setCauHinh(rs.getString("CauHinh"));
+                kho.setMoTa(rs.getString("MoTa"));
+                kho.setDonGia(rs.getInt("DonGia"));
+                kho.setSLTot(rs.getInt("SoLuong"));
+                kho.setSLHong(rs.getInt("SoLuongHong"));
+                kho.setSLPhongKhac(rs.getInt("SoLuongChoMuon"));
+                listKho.add(kho);
+            }
+            return listKho;
+        } catch (SQLException ex) {
+            Logger.getLogger(DanhMucGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
     
     
     public void Them() throws Exception
     {
-        
+                String MaTB = txtMaTB.getText();
+        String TenTB = txtTenTB.getText();
+        String CauHinh = txtCauHinh.getText();
+        String MoTa = txtMoTa.getText();
+        String SoLuong = txtSoLuong.getText();
+        String DonGia = txtDonGia.getText();
+            if (MaTB.isEmpty() || TenTB.isEmpty() || CauHinh.isEmpty() || SoLuong.isEmpty() || DonGia.isEmpty())//Kiểm tra dữ liệu nhập vào không được trống
+                throw new Exception("Bạn chưa nhập đầy đủ thông tin");
+             else {
+                if (KhoBLL.ktKhoa(MaTB).isBeforeFirst()) 
+                    throw new Exception("Trùng mã thiết bị");
+                if(!Pattern.matches("[0-9]+",SoLuong)||Integer.valueOf(SoLuong)<=0)
+                    throw new Exception("Số lượng không hợp lệ");
+                if(!Pattern.matches("[0-9]+",DonGia)||Integer.valueOf(DonGia)<0)
+                    throw new Exception("Đơn giá không hợp lệ");
+                if (KhoBLL.ThemThietBi(MaTB, TenTB, CauHinh, MoTa, Integer.valueOf(DonGia), Integer.valueOf(SoLuong)) != 0) {
+                    JOptionPane.showMessageDialog(null, "Thêm thiết bị thành công", "Thông báo", 1);
+                    GiaoDichBLL.GiaoDichThem("Thêm thiết bị vào kho", strDate,TenNhanVien);//Them vào GiaoDich(Ten,LoaiGD,Ngay)
+                    GiaoDichBLL.LichSu(MaTB, Integer.valueOf(SoLuong), Integer.valueOf(DonGia), "Tốt", "");//Thêm vào bảng LichSu;
+                    loadThietBi();
+                    xoaTrang();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Thêm thiết bị không thành công", "Thông báo", 1);
+                    }
+            }
     }
     //Thêm thiết bị
     private void btnThemTbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemTbActionPerformed
-        
+                try{
+            Them();
+            xoaTrang();
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(null,e.getMessage(), "Thông báo", 1);
+        }
     }//GEN-LAST:event_btnThemTbActionPerformed
     //CapNhatThietBi
 
     private void btnSuaThietBiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaThietBiActionPerformed
-       
+               try{
+        String MaTB = txtMaTB.getText();
+        String TenTB = txtTenTB.getText();
+        String CauHinh = txtCauHinh.getText();
+        String MoTa = txtMoTa.getText();
+        if (MaTB.isEmpty())
+            JOptionPane.showMessageDialog(null, "Bạn chưa chọn thiết bị", "Thông báo", 1);
+        else {
+            int SoLuong = Integer.valueOf(txtSoLuong.getText());
+            int DonGia = Integer.valueOf(txtDonGia.getText());
+            if (KhoBLL.CapNhatTB(MaTB, TenTB, CauHinh, MoTa, DonGia, SoLuong) != 0) {
+                JOptionPane.showMessageDialog(null, "Cập nhật thành công", "Thông báo", 1);
+                GiaoDichBLL.GiaoDichThem("Cập nhật thiết bị", strDate, TenNhanVien);//Them vào GiaoDich(Ten,LoaiGD,Ngay)
+                GiaoDichBLL.LichSu(MaTB, Integer.valueOf(SoLuong), Integer.valueOf(DonGia), "Tốt", "");//Thêm vào bảng LichSu;
+                loadThietBi();
+                xoaTrang();
+            } else {
+                JOptionPane.showMessageDialog(null, "Cập nhật thất bại", "Thông báo", 1);
+            }
+        }
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(null, "Số lượng, đơn giá phải là số", "Thông báo", 1);
+        }
     }//GEN-LAST:event_btnSuaThietBiActionPerformed
     //Hiển thị thông tin thiết bị khi chọn 1 dòng trong Jtable
     private void jTableThietBiMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTableThietBiMouseClicked
