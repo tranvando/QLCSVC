@@ -1682,7 +1682,8 @@ public class DanhMucGUI extends javax.swing.JFrame {
     private void btnKhoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnKhoActionPerformed
         jTabbedPaneMain.setSelectedIndex(0);
         //btnKho.setBackground(Color.green);
-        
+        loadThietBi();
+        //cbbPhongChuyen.setModel(new DefaultComboBoxModel(listMaPhong()));
         System.gc();
         System.runFinalization();
         
