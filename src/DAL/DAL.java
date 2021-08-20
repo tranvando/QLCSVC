@@ -1,3 +1,4 @@
+
 package DAL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,16 +7,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author pc
- */
 public class DAL {
     
     static ResultSet rs = null;
     static Statement st = null;
     static Connection conn=null;
-    public void getConnect(){
+    static void getConnect(){
         try {
             //Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             //conn = (Connection)DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=QLCSVC;Username=sa;Password = abc");
@@ -81,4 +78,7 @@ public class DAL {
         }
    } 
 
+    public static void main(String[] args) {
+        getConnect();
+    }
 }

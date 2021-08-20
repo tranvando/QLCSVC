@@ -5,10 +5,23 @@
  */
 package CustomTable;
 
-
+import java.text.NumberFormat;
+import javax.swing.SwingConstants;
 
 public class NumberRenderer extends FormatRenderer
 {
-	
+	/*
+	 *  Use the specified number formatter and right align the text
+	 */
+	public NumberRenderer(NumberFormat formatter)
+	{
+		super(formatter);
+		setHorizontalAlignment( SwingConstants.LEFT );
+	}
+
+	public static NumberRenderer getIntegerRenderer()
+	{
+		return new NumberRenderer( NumberFormat.getIntegerInstance() );
+	}
 
 }
