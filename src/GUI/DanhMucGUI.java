@@ -2092,6 +2092,9 @@ public class DanhMucGUI extends javax.swing.JFrame {
     private void btnGiaoDichActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGiaoDichActionPerformed
         jTabbedPaneMain.setSelectedIndex(3);
         loadGD();
+        ArrayList<LichSuDTO> list = new ArrayList<>();
+        jTableChiTietGD.setModel(new TableLichSu(list));
+        //jTableChiTietGD.setRow
         lblNguoiTH.setText("");
         lblMaGD.setText("");
         lblThoiGian.setText("");
@@ -2441,12 +2444,12 @@ public class DanhMucGUI extends javax.swing.JFrame {
             }
         });
     }
-    public int getSL(String MaTB)//Trả về số lượng trong kho của thiết bị có MaTB
+    public int getSL(String MaTB)//Trả về số lượng tốt trong kho của thiết bị có MaTB
     {
         ArrayList<KhoDTO> list = listTbKho();
         for(int i=0; i<list.size();i++)
             if(list.get(i).getMaTB().equals(MaTB))
-                return list.get(i).getSLTot();
+                return list.get(i).getSLTot()-list.get(i).getSLHong();
         return 0;
     }
     public void Chuyen()
@@ -2496,7 +2499,6 @@ public class DanhMucGUI extends javax.swing.JFrame {
                 {   
                     int dem=0, kt=0,kt1=0;
                     
-  
                     ArrayList<CacGiaoDichDTO> listTBC = listTBChuyen();
                     for (int i = 0; i <listTBC.size(); i++) //Thêm list dòng vào cơ sở dữ liệu
                     {   
@@ -2756,7 +2758,7 @@ public class DanhMucGUI extends javax.swing.JFrame {
     private void btnThongKeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThongKeActionPerformed
        jTabbedPaneMain.setSelectedIndex(5);
        cbbTkMa.setModel(new DefaultComboBoxModel(listMaTBTk()));//load mã thiết bị vào combobox
-       cbbTkPhong.setModel(new DefaultComboBoxModel(listTenPhong()));//load mã thiết bị vào combobox
+       cbbTkPhong.setModel(new DefaultComboBoxModel(listTenPhong()));//load tên phòng vào combobox
        loadTableTk(listTbTKe(tk.tk1("All")),"Kho","");
     }//GEN-LAST:event_btnThongKeActionPerformed
 
